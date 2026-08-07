@@ -17,5 +17,8 @@
         public BookingSeat? BookingSeat { get; set; }
 
         public string SeatLabel => $"{SeatRow}{SeatNumber}";
+
+        public ICollection<SeatHold> SeatHolds { get; set; }
+       = new List<SeatHold>();
     }
 }
