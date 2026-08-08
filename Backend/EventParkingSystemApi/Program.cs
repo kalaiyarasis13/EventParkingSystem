@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 
+
 namespace EventParkingSystemApi
 {
     public class Program
@@ -27,6 +28,15 @@ namespace EventParkingSystemApi
             builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<IEventRepository, EventRepository>();
+          
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+            builder.Services.AddScoped<IHoldRepository, HoldRepository>();
+            builder.Services.AddScoped<IParkingSlotRepository,ParkingSlotRepository>();
+            builder.Services.AddScoped<IVenueRepository, VenueRepository>();
+            builder.Services.AddScoped<ISeatRepository, SeatRepository>();
+            builder.Services.AddScoped<IBookingSeatRepository,BookingSeatRepository>();
 
             // ---------- Services (business logic layer) ----------
             builder.Services.AddScoped<ITokenService, TokenService>();
@@ -36,6 +46,15 @@ namespace EventParkingSystemApi
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IEventService, EventService>();
             builder.Services.AddScoped<IDashboardService, DashboardService>();
+          
+            builder.Services.AddScoped<IBookingService, BookingService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+            builder.Services.AddScoped<IHoldService, HoldService>();
+            builder.Services.AddScoped<IParkingSlotService, ParkingSlotService>();
+            builder.Services.AddScoped<IVenueService, VenueService>();
+            builder.Services.AddScoped<ISeatService, SeatService>();
+            builder.Services.AddScoped<IBookingSeatService,BookingSeatService>();
 
             // ---------- Controllers ----------
             builder.Services.AddControllers().AddJsonOptions(opts =>
@@ -74,6 +93,7 @@ namespace EventParkingSystemApi
                     policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod());
             });
 
+            // Add services to the container.
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

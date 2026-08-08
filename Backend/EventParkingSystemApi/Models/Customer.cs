@@ -16,5 +16,8 @@
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public ICollection<Feedback> Feedbacks { get; set; }
+    = new List<Feedback>();
     }
 }
