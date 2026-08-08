@@ -1,6 +1,6 @@
 ﻿using EventParkingSystemApi.DTOs;
 
-namespace EventParkingSystemApi.Services;
+namespace EventParkingSystemApi.IServices;
 
 public interface IPaymentService
 {

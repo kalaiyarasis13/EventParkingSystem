@@ -1,6 +1,6 @@
 ﻿using EventParkingSystemApi.DTOs;
 
-namespace EventParkingSystemApi.IService;
+namespace EventParkingSystemApi.IServices;
 
 public interface ISeatService
 {

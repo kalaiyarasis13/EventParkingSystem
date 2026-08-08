@@ -55,6 +55,7 @@ namespace EventParkingSystemApi
             builder.Services.AddScoped<IVenueService, VenueService>();
             builder.Services.AddScoped<ISeatService, SeatService>();
             builder.Services.AddScoped<IBookingSeatService,BookingSeatService>();
+            builder.Services.AddScoped<IBookingService, BookingService>();
 
             // ---------- Controllers ----------
             builder.Services.AddControllers().AddJsonOptions(opts =>
@@ -126,6 +127,8 @@ namespace EventParkingSystemApi
         }
     });
             });
+
+            builder.Services.AddScoped<IParkingReservationRepository, ParkingReservationRepository>();
 
             var app = builder.Build();
 

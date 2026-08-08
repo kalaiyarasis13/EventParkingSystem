@@ -1,10 +1,10 @@
-﻿using EventParkingSystemApi.IService;
-using EventParkingSystemApi.IRepository;
+﻿using EventParkingSystemApi.IServices;
 using EventParkingSystemApi.Models;
 using Microsoft.EntityFrameworkCore;
 using EventParkingSystemApi.DTOs;
 using EventParkingSystemApi.Helpers;
 using EventParkingSystemApi.IRepositories;
+
 
 
 

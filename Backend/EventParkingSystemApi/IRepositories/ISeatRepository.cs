@@ -1,6 +1,6 @@
 ﻿using EventParkingSystemApi.Models;
 
-namespace EventParkingSystemApi.IRepository;
+namespace EventParkingSystemApi.IRepositories;
 
 public interface ISeatRepository
 {
@@ -14,6 +14,8 @@ public interface ISeatRepository
         List<int> seatIds,
         int eventId);
 
+    Task<int> CountAvailableAsync();
+
     Task AddAsync(Seat seat);
 
     void Update(Seat seat);
@@ -21,4 +23,5 @@ public interface ISeatRepository
     void Remove(Seat seat);
 
     Task<int> SaveChangesAsync();
+
 }

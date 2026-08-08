@@ -1,5 +1,5 @@
 ﻿using EventParkingSystemApi.Data;
-using EventParkingSystemApi.IRepository;
+using EventParkingSystemApi.IRepositories;
 using EventParkingSystemApi.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -52,5 +52,11 @@ public class VenueRepository : IVenueRepository
     public async Task<int> SaveChangesAsync()
     {
         return await _db.SaveChangesAsync();
+    }
+
+    public async Task<bool> ExistsAsync(int venueId)
+    {
+        return await _db.Venues
+            .AnyAsync(v => v.VenueId == venueId);
     }
 }

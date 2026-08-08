@@ -14,5 +14,7 @@ namespace EventParkingSystemApi.IRepositories
         Task<List<EventCategory>> GetAllOrderedAsync();
         Task<bool> ExistsAsync(int categoryId);
         Task<bool> ExistsByNameAsync(string name);
+
+        
     }
 }

@@ -1,6 +1,6 @@
 ﻿using EventParkingSystemApi.Models;
 
-namespace EventParkingSystemApi.IRepository;
+namespace EventParkingSystemApi.IRepositories;
 
 public interface IVenueRepository
 {
@@ -17,4 +17,6 @@ public interface IVenueRepository
     void Remove(Venue venue);
 
     Task<int> SaveChangesAsync();
+
+    Task<bool> ExistsAsync(int venueId);
 }

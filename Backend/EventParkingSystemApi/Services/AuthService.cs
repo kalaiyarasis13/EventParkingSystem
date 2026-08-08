@@ -36,7 +36,7 @@ namespace EventParkingSystemApi.Services
             await _customerRepository.AddAsync(customer);
             await _customerRepository.SaveChangesAsync();
 
-            var token = _tokenService.GenerateToken(customer);
+            var token = await _tokenService.GenerateToken(customer);
             return new AuthResponse(token, customer.CustomerId, customer.FullName, customer.Email, customer.Role);
         }
 
@@ -49,7 +49,7 @@ namespace EventParkingSystemApi.Services
             if (!customer.IsActive)
                 throw ApiException.Forbidden("This account has been deactivated.");
 
-            var token = _tokenService.GenerateToken(customer);
+            var token = await _tokenService.GenerateToken(customer);
             return new AuthResponse(token, customer.CustomerId, customer.FullName, customer.Email, customer.Role);
         }
     }

@@ -1,6 +1,6 @@
 ﻿using EventParkingSystemApi.Models;
 
-namespace EventParkingSystemApi.IRepository;
+namespace EventParkingSystemApi.IRepositories;
 
 public interface IParkingReservationRepository
 {

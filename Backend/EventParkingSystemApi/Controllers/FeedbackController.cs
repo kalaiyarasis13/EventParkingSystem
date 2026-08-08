@@ -1,5 +1,5 @@
 ﻿using EventParkingSystemApi.DTOs;
-using EventParkingSystemApi.IService;
+using EventParkingSystemApi.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;

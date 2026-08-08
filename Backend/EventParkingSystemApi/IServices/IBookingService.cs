@@ -1,7 +1,7 @@
 ﻿using EventParkingSystemApi.DTOs;
 using EventParkingSystemApi.Models;
 
-namespace EventParkingSystemApi.IService;
+namespace EventParkingSystemApi.IServices;
 
 public interface IBookingService
 {

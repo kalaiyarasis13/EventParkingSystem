@@ -1,7 +1,7 @@
 ﻿using EventParkingSystemApi.DTOs;
 using EventParkingSystemApi.Helpers;
-using EventParkingSystemApi.IRepository;
-using EventParkingSystemApi.IService;
+using EventParkingSystemApi.IRepositories;
+using EventParkingSystemApi.IServices;
 using EventParkingSystemApi.Models;
 
 namespace EventParkingSystemApi.Services;

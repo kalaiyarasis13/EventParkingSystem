@@ -1,9 +1,9 @@
 ﻿using EventParkingSystemApi.DTOs;
 using EventParkingSystemApi.Helpers;
 using EventParkingSystemApi.Services;
-using EventParkingSystemApi.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using EventParkingSystemApi.IServices;
 
 namespace EventParkingSystemApi.Controllers;
 

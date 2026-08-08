@@ -1,6 +1,6 @@
 ﻿using EventParkingSystemApi.Models;
 
-namespace EventParkingSystemApi.IRepository;
+namespace EventParkingSystemApi.IRepositories;
 
 public interface IParkingSlotRepository
 {
@@ -15,6 +15,8 @@ public interface IParkingSlotRepository
 
     Task<List<ParkingSlot>> GetAvailableByEventAsync(
         int eventId);
+
+    Task<int> CountOccupiedAsync();
 
     Task AddAsync(ParkingSlot parkingSlot);
 

@@ -1,7 +1,7 @@
 ﻿using EventParkingSystemApi.Models;
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace EventParkingSystemApi.IRepository;
+namespace EventParkingSystemApi.IRepositories;
 
 public interface IBookingRepository
 {

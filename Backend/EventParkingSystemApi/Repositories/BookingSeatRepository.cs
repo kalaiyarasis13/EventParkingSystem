@@ -1,5 +1,5 @@
 ﻿using EventParkingSystemApi.Data;
-using EventParkingSystemApi.IRepository;
+using EventParkingSystemApi.IRepositories;
 using EventParkingSystemApi.Models;
 using Microsoft.EntityFrameworkCore;
 

@@ -122,9 +122,9 @@ namespace EventParkingSystemApi.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 e.HasOne(f => f.Customer)
-                    .WithMany()
-                    .HasForeignKey(f => f.CustomerId)
-                    .OnDelete(DeleteBehavior.Restrict);
+     .WithMany(c => c.Feedbacks)
+     .HasForeignKey(f => f.CustomerId)
+     .OnDelete(DeleteBehavior.Restrict);
             });
 
             // ---- Seat Holds ----
@@ -133,9 +133,9 @@ namespace EventParkingSystemApi.Data
                 e.HasKey(h => h.HoldId);
 
                 e.HasOne(h => h.Seat)
-                    .WithMany()
-                    .HasForeignKey(h => h.SeatId)
-                    .OnDelete(DeleteBehavior.Restrict);
+    .WithMany(s => s.SeatHolds)
+    .HasForeignKey(h => h.SeatId)
+    .OnDelete(DeleteBehavior.Restrict);
 
                 e.HasOne(h => h.Event)
                     .WithMany()
