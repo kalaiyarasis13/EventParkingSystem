@@ -11,8 +11,13 @@
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public string? CurrentToken { get; set; }
+        public DateTime? TokenExpiresAt { get; set; }
 
         public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
+        public ICollection<Feedback> Feedbacks { get; set; }
+    = new List<Feedback>();
     }
 }

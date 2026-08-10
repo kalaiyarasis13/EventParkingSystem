@@ -103,6 +103,9 @@ namespace EventParkingSystemApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrentToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
@@ -125,6 +128,9 @@ namespace EventParkingSystemApi.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("TokenExpiresAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -280,6 +286,40 @@ namespace EventParkingSystemApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EventParkingSystemApi.Models.Feedback", b =>
+                {
+                    b.Property<int>("FeedbackId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FeedbackId"));
+
+                    b.Property<int>("BookingId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.HasKey("FeedbackId");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Feedbacks");
+                });
+
             modelBuilder.Entity("EventParkingSystemApi.Models.Notification", b =>
                 {
                     b.Property<int>("NotificationId")
@@ -332,6 +372,9 @@ namespace EventParkingSystemApi.Migrations
 
                     b.Property<int>("ParkingSlotId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ParkingReservationId");
 
@@ -744,6 +787,44 @@ namespace EventParkingSystemApi.Migrations
                         });
                 });
 
+            modelBuilder.Entity("EventParkingSystemApi.Models.SeatHold", b =>
+                {
+                    b.Property<int>("HoldId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HoldId"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("HeldAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SeatId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("HoldId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("SeatId", "Status");
+
+                    b.ToTable("SeatHolds");
+                });
+
             modelBuilder.Entity("EventParkingSystemApi.Models.Venue", b =>
                 {
                     b.Property<int>("VenueId")
@@ -842,6 +923,25 @@ namespace EventParkingSystemApi.Migrations
                     b.Navigation("Venue");
                 });
 
+            modelBuilder.Entity("EventParkingSystemApi.Models.Feedback", b =>
+                {
+                    b.HasOne("EventParkingSystemApi.Models.Booking", "Booking")
+                        .WithOne("Feedback")
+                        .HasForeignKey("EventParkingSystemApi.Models.Feedback", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EventParkingSystemApi.Models.Customer", "Customer")
+                        .WithMany("Feedbacks")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("EventParkingSystemApi.Models.Notification", b =>
                 {
                     b.HasOne("EventParkingSystemApi.Models.Customer", "Customer")
@@ -905,9 +1005,38 @@ namespace EventParkingSystemApi.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("EventParkingSystemApi.Models.SeatHold", b =>
+                {
+                    b.HasOne("EventParkingSystemApi.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EventParkingSystemApi.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("EventParkingSystemApi.Models.Seat", "Seat")
+                        .WithMany("SeatHolds")
+                        .HasForeignKey("SeatId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Event");
+
+                    b.Navigation("Seat");
+                });
+
             modelBuilder.Entity("EventParkingSystemApi.Models.Booking", b =>
                 {
                     b.Navigation("BookingSeats");
+
+                    b.Navigation("Feedback");
 
                     b.Navigation("ParkingReservation");
 
@@ -917,6 +1046,8 @@ namespace EventParkingSystemApi.Migrations
             modelBuilder.Entity("EventParkingSystemApi.Models.Customer", b =>
                 {
                     b.Navigation("Bookings");
+
+                    b.Navigation("Feedbacks");
 
                     b.Navigation("Notifications");
                 });
@@ -943,6 +1074,8 @@ namespace EventParkingSystemApi.Migrations
             modelBuilder.Entity("EventParkingSystemApi.Models.Seat", b =>
                 {
                     b.Navigation("BookingSeat");
+
+                    b.Navigation("SeatHolds");
                 });
 
             modelBuilder.Entity("EventParkingSystemApi.Models.Venue", b =>

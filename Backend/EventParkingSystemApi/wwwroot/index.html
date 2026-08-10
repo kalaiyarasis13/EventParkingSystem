@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07111f" />
+  <title>Parkora | Events & Parking</title>
+  <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="Parkora home">
+      <span class="brand-mark">P</span>
+      <span>Parkora</span>
+    </a>
+
+    <nav class="nav-links" id="mainNav">
+        <button class="nav-link active" data-view="home">Discover</button>
+
+        <button class="nav-link auth-only" data-view="bookings">
+            My Bookings
+        </button>
+
+        <button class="nav-link auth-only" data-view="feedback">
+            Feedback
+        </button>
+
+        <button class="nav-link auth-only" data-view="notifications">
+            Notifications
+        </button>
+
+        <button class="nav-link admin-only" data-view="admin">
+            Admin
+        </button>
+    </nav>
+
+    <div class="header-actions">
+      <button id="themeBtn" class="icon-btn" aria-label="Toggle theme">☾</button>
+      <button id="loginBtn" class="btn btn-ghost">Sign in</button>
+      <button id="registerBtn" class="btn btn-primary">Create account</button>
+      <button id="profileBtn" class="profile-chip auth-only" data-view="profile">
+        <span class="avatar" id="headerAvatar">U</span>
+        <span class="profile-chip-copy">
+          <strong id="headerName">Account</strong>
+          <small id="headerRole">Customer</small>
+        </span>
+      </button>
+      <button id="logoutBtn" class="icon-btn auth-only" title="Sign out">↗</button>
+    </div>
+  </header>
+
+  <main>
+      <section id="view-home" class="view active-view">
+          <div class="hero shell">
+              <div class="hero-copy">
+                  <span class="eyebrow"><span class="pulse-dot"></span> Seamless event days start here</span>
+                  <h1>Book the moment.<br><span>Park without the stress.</span></h1>
+                  <p>Find events, choose your seats, reserve parking and pay — all from one simple experience.</p>
+                  <div class="hero-actions">
+                      <button class="btn btn-primary btn-lg" id="exploreBtn">Explore events <span>→</span></button>
+                      <button class="btn btn-soft btn-lg" id="myBookingsHeroBtn">View my bookings</button>
+                  </div>
+                  <div class="trust-row">
+                      <div><strong>Fast</strong><span>seat selection</span></div>
+                      <div><strong>Secure</strong><span>booking flow</span></div>
+                      <div><strong>Smart</strong><span>parking reserve</span></div>
+                  </div>
+              </div>
+
+              <div class="hero-visual">
+                  <div class="visual-card main-visual-card">
+                      <div class="visual-topline">
+                          <span class="live-badge">LIVE EVENTS</span>
+                          <span class="muted">Sri Lanka</span>
+                      </div>
+                      <div class="stage-art">
+                          <div class="stage-glow"></div>
+                          <div class="stage-lines"></div>
+                          <span class="stage-label">YOUR NEXT<br>EXPERIENCE</span>
+                      </div>
+                      <div class="visual-details">
+                          <div>
+                              <small>Easy booking</small>
+                              <strong>Seats + Parking</strong>
+                          </div>
+                          <div class="mini-stack">
+                              <span>01</span><span>02</span><span>03</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="floating-card float-one"><span>✓</span><div><small>Booking ready</small><strong>Instant confirmation</strong></div></div>
+                  <div class="floating-card float-two"><span>⌁</span><div><small>Parking</small><strong>Reserved before arrival</strong></div></div>
+              </div>
+          </div>
+
+          <section class="discover-section shell" id="eventsSection">
+              <div class="section-heading">
+                  <div>
+                      <span class="eyebrow">DISCOVER</span>
+                      <h2>Events worth showing up for</h2>
+                  </div>
+                  <span class="result-count" id="eventCount">Loading events…</span>
+              </div>
+
+              <div class="filter-bar">
+                  <label class="search-box">
+                      <span>⌕</span>
+                      <input id="eventSearch" type="search" placeholder="Search events by name…" />
+                  </label>
+                  <label class="field compact-field">
+                      <span>Event date</span>
+                      <input id="eventDateFilter" type="date" />
+                  </label>
+                  <label class="field compact-field">
+                      <span>Category</span>
+                      <select id="categoryFilter"><option value="">All categories</option></select>
+                  </label>
+                  <button id="clearFiltersBtn" class="btn btn-soft">Clear</button>
+              </div>
+
+              <div id="eventsGrid" class="events-grid">
+                  <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+              </div>
+          </section>
+      </section>
+
+      <section id="view-bookings" class="view shell page-view">
+          <div class="page-head">
+              <div><span class="eyebrow">YOUR SPACE</span><h1>My bookings</h1><p>Manage tickets, parking and payments in one place.</p></div>
+              <button class="btn btn-primary" data-view="home">Find another event</button>
+          </div>
+          <div id="bookingsList" class="stack-list"></div>
+      </section>
+
+      <section id="view-feedback" class="view shell page-view">
+
+          <div class="page-head">
+
+              <div>
+                  <span class="eyebrow">COMMUNITY</span>
+
+                  <h1>Customer feedback</h1>
+
+                  <p>
+                      See what customers are saying about their event experiences.
+                  </p>
+              </div>
+
+          </div>
+
+          <div id="allFeedbackList" class="stack-list"></div>
+
+      </section>
+
+      <section id="view-notifications" class="view shell page-view">
+          <div class="page-head">
+              <div><span class="eyebrow">UPDATES</span><h1>Notifications</h1><p>Booking, payment and reservation updates.</p></div>
+          </div>
+          <div id="notificationsList" class="stack-list"></div>
+      </section>
+
+      <section id="view-profile" class="view shell page-view">
+          <div class="page-head">
+              <div><span class="eyebrow">ACCOUNT</span><h1>Profile</h1><p>Keep your customer details up to date.</p></div>
+          </div>
+          <div class="profile-layout">
+              <aside class="profile-summary card-panel">
+                  <div class="big-avatar" id="profileAvatar">U</div>
+                  <h3 id="profileDisplayName">Customer</h3>
+                  <p id="profileDisplayEmail">—</p>
+                  <span class="status-pill success">Active account</span>
+                  <div class="mini-stats">
+                      <div><strong id="profileTotalBookings">0</strong><span>Total bookings</span></div>
+                      <div><strong id="profileUpcomingBookings">0</strong><span>Upcoming</span></div>
+                  </div>
+              </aside>
+              <form id="profileForm" class="card-panel form-panel">
+                  <div class="form-title"><h3>Personal information</h3><p>Update your name and phone number.</p></div>
+                  <label class="field"><span>Full name</span><input id="profileFullName" required /></label>
+                  <label class="field"><span>Email</span><input id="profileEmail" disabled /></label>
+                  <label class="field"><span>Phone</span><input id="profilePhone" placeholder="07X XXX XXXX" /></label>
+                  <button class="btn btn-primary" type="submit">Save changes</button>
+              </form>
+          </div>
+      </section>
+
+      <section id="view-admin" class="view shell page-view">
+          <div class="page-head">
+              <div><span class="eyebrow">CONTROL CENTER</span><h1>Admin dashboard</h1><p>Monitor reservations and manage events.</p></div>
+              <button id="openEventFormBtn" class="btn btn-primary">+ Create event</button>
+          </div>
+          <div id="adminStats" class="stats-grid"></div>
+          <div class="admin-grid">
+              <div class="card-panel">
+                  <div class="panel-heading"><div><h3>Event management</h3><p>Current events and capacity.</p></div><button class="btn btn-soft btn-sm" id="refreshAdminEventsBtn">Refresh</button></div>
+                  <div id="adminEventsTable" class="table-wrap"></div>
+              </div>
+              <div class="card-panel">
+                  <div class="panel-heading"><div><h3>Customers</h3><p>Search registered customers.</p></div></div>
+                  <label class="search-box small"><span>⌕</span><input id="customerSearch" placeholder="Search name or email" /></label>
+                  <div id="adminCustomers" class="compact-list"></div>
+              </div>
+          </div>
+          <div class="card-panel" style="margin-top:18px">
+
+              <div class="panel-heading">
+
+                  <div>
+                      <h3>Customer Feedback</h3>
+                      <p>View feedback submitted by all customers.</p>
+                  </div>
+
+                  <button class="btn btn-soft btn-sm"
+                          id="refreshAdminFeedbackBtn">
+                      Refresh
+                  </button>
+
+              </div>
+
+              <div id="adminFeedbackList" class="stack-list"></div>
+
+          </div>
+      </section>
+  </main>
+
+  <div id="authModal" class="modal-backdrop hidden">
+    <div class="modal auth-modal">
+      <button class="modal-close" data-close="authModal">×</button>
+      <div class="auth-brand"><span class="brand-mark">P</span><span>Parkora</span></div>
+      <div class="tabs"><button class="tab active" data-auth-tab="login">Sign in</button><button class="tab" data-auth-tab="register">Create account</button></div>
+
+      <form id="loginForm" class="auth-form active-auth-form">
+        <div class="form-title"><h2>Welcome back</h2><p>Continue to your event dashboard.</p></div>
+        <label class="field"><span>Email</span><input id="loginEmail" type="email" required placeholder="you@example.com" /></label>
+        <label class="field"><span>Password</span><input id="loginPassword" type="password" required placeholder="••••••••" /></label>
+        <button class="btn btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+      <form id="registerForm" class="auth-form">
+        <div class="form-title"><h2>Create your account</h2><p>Book seats and parking in a few clicks.</p></div>
+        <label class="field"><span>Full name</span><input id="registerName" required /></label>
+        <div class="two-col">
+          <label class="field"><span>Email</span><input id="registerEmail" type="email" required /></label>
+          <label class="field"><span>Phone</span><input id="registerPhone" required /></label>
+        </div>
+        <label class="field"><span>Password</span><input id="registerPassword" type="password" minlength="6" required /></label>
+        <button class="btn btn-primary btn-block" type="submit">Create account</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="eventModal" class="modal-backdrop hidden">
+    <div class="modal booking-modal">
+      <button class="modal-close" data-close="eventModal">×</button>
+      <div id="eventModalContent"></div>
+    </div>
+  </div>
+
+  <div id="receiptModal" class="modal-backdrop hidden">
+    <div class="modal receipt-modal">
+      <button class="modal-close" data-close="receiptModal">×</button>
+      <div id="receiptContent"></div>
+    </div>
+  </div>
+
+  <div id="eventFormModal" class="modal-backdrop hidden">
+    <div class="modal event-form-modal">
+      <button class="modal-close" data-close="eventFormModal">×</button>
+      <form id="eventCreateForm">
+        <div class="form-title"><span class="eyebrow">ADMIN</span><h2>Create a new event</h2><p>Seats and parking slots are generated from these values.</p></div>
+        <div class="two-col">
+          <label class="field"><span>Event name</span><input id="adminEventName" required /></label>
+          <label class="field"><span>Event date</span><input id="adminEventDate" type="date" required /></label>
+          <label class="field"><span>Event time</span><input id="adminEventTime" type="time" required /></label>
+          <label class="field">
+              <span>Venue</span>
+
+              <input type="text"
+                     id="adminEventVenue"
+                     list="adminVenueList"
+                     placeholder="Select or type venue"
+                     autocomplete="off" />
+
+              <datalist id="adminVenueList"></datalist>
+          </label>
+          <label class="field"><span>Category</span><select id="adminEventCategory" required></select></label>
+          <label class="field"><span>Ticket price (LKR)</span><input id="adminTicketPrice" type="number" min="0" step="0.01" required /></label>
+          <label class="field"><span>Parking fee (LKR)</span><input id="adminParkingFee" type="number" min="0" step="0.01" required /></label>
+          <label class="field"><span>Seat rows</span><input id="adminSeatRows" type="number" min="1" value="5" required /></label>
+          <label class="field"><span>Seats per row</span><input id="adminSeatsPerRow" type="number" min="1" value="10" required /></label>
+          <label class="field"><span>Parking slot count</span><input id="adminParkingCount" type="number" min="0" value="20" required /></label>
+        </div>
+        <label class="field"><span>Description</span><textarea id="adminEventDescription" rows="4" placeholder="Tell customers what makes this event special"></textarea></label>
+        <button class="btn btn-primary btn-block" type="submit">Publish event</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="feedbackModal" class="modal-backdrop hidden">
+    <div class="modal feedback-modal">
+      <button class="modal-close" data-close="feedbackModal">×</button>
+      <form id="feedbackForm">
+        <div class="form-title"><span class="eyebrow">FEEDBACK</span><h2>How was your experience?</h2><p>Your feedback helps improve future events.</p></div>
+        <input type="hidden" id="feedbackBookingId" />
+        <div class="rating-picker" id="ratingPicker">
+          <button type="button" data-rating="1">★</button><button type="button" data-rating="2">★</button><button type="button" data-rating="3">★</button><button type="button" data-rating="4">★</button><button type="button" data-rating="5">★</button>
+        </div>
+        <input type="hidden" id="feedbackRating" value="5" />
+        <label class="field"><span>Comment</span><textarea id="feedbackComment" rows="4" placeholder="Share a short comment…"></textarea></label>
+        <button class="btn btn-primary btn-block" type="submit">Submit feedback</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

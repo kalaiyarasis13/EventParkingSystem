@@ -1,0 +1,74 @@
+﻿using EventParkingSystemApi.Data;
+using EventParkingSystemApi.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace EventParkingSystemApi.IRepositories;
+
+public class FeedbackRepository : IFeedbackRepository
+{
+    private readonly AppDbContext _db;
+
+    public FeedbackRepository(AppDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<Feedback?> GetByIdAsync(int feedbackId)
+    {
+        return await _db.Feedbacks
+            .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
+            .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId);
+    }
+
+    public async Task<Feedback?> GetByBookingIdAsync(int bookingId)
+    {
+        return await _db.Feedbacks
+            .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
+            .FirstOrDefaultAsync(f => f.BookingId == bookingId);
+    }
+
+    public async Task<List<Feedback>> GetByCustomerIdAsync(int customerId)
+    {
+        return await _db.Feedbacks
+            .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
+            .Where(f => f.CustomerId == customerId)
+            .OrderByDescending(f => f.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<List<Feedback>> GetAllAsync()
+    {
+        return await _db.Feedbacks
+            .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
+            .OrderByDescending(f => f.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task AddAsync(Feedback feedback)
+    {
+        await _db.Feedbacks.AddAsync(feedback);
+    }
+
+    public void Update(Feedback feedback)
+    {
+        _db.Feedbacks.Update(feedback);
+    }
+
+    public void Remove(Feedback feedback)
+    {
+        _db.Feedbacks.Remove(feedback);
+    }
+
+    public async Task<int> SaveChangesAsync()
+    {
+        return await _db.SaveChangesAsync();
+    }
+}

@@ -19,6 +19,9 @@ namespace EventParkingSystemApi.Data
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<Notification> Notifications => Set<Notification>();
 
+        public DbSet<Feedback> Feedbacks => Set<Feedback>();
+        public DbSet<SeatHold> SeatHolds => Set<SeatHold>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // ---- Customers ----
@@ -100,6 +103,55 @@ namespace EventParkingSystemApi.Data
                 e.HasIndex(p => p.BookingId).IsUnique(); // no double payment
                 e.HasOne(p => p.Booking).WithOne(b => b.Payment)
                     .HasForeignKey<Payment>(p => p.BookingId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // ---- Feedbacks ----
+            modelBuilder.Entity<Feedback>(e =>
+            {
+                e.HasKey(f => f.FeedbackId);
+
+                e.Property(f => f.Comment)
+                    .HasMaxLength(1000);
+
+                e.HasIndex(f => f.BookingId)
+                    .IsUnique(); // one feedback per booking
+
+                e.HasOne(f => f.Booking)
+                    .WithOne(b => b.Feedback)
+                    .HasForeignKey<Feedback>(f => f.BookingId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                e.HasOne(f => f.Customer)
+     .WithMany(c => c.Feedbacks)
+     .HasForeignKey(f => f.CustomerId)
+     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // ---- Seat Holds ----
+            modelBuilder.Entity<SeatHold>(e =>
+            {
+                e.HasKey(h => h.HoldId);
+
+                e.HasOne(h => h.Seat)
+    .WithMany(s => s.SeatHolds)
+    .HasForeignKey(h => h.SeatId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(h => h.Event)
+                    .WithMany()
+                    .HasForeignKey(h => h.EventId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasOne(h => h.Customer)
+                    .WithMany()
+                    .HasForeignKey(h => h.CustomerId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                e.HasIndex(h => new
+                {
+                    h.SeatId,
+                    h.Status
+                });
             });
 
             // ---- Notifications ----

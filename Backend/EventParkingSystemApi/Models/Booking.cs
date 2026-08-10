@@ -8,6 +8,7 @@ namespace EventParkingSystemApi.Models
         public const string Pending = "Pending";
         public const string Confirmed = "Confirmed";
         public const string Cancelled = "Cancelled";
+        public const string Expired= "Expired";
     }
 
     public class Booking
@@ -26,5 +27,6 @@ namespace EventParkingSystemApi.Models
         public ICollection<BookingSeat> BookingSeats { get; set; } = new List<BookingSeat>();
         public ParkingReservation? ParkingReservation { get; set; }
         public Payment? Payment { get; set; }
+        public Feedback? Feedback { get; set; }
     }
 }
