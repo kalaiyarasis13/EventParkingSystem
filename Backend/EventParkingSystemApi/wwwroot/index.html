@@ -275,7 +275,17 @@
           <label class="field"><span>Event name</span><input id="adminEventName" required /></label>
           <label class="field"><span>Event date</span><input id="adminEventDate" type="date" required /></label>
           <label class="field"><span>Event time</span><input id="adminEventTime" type="time" required /></label>
-          <label class="field"><span>Venue</span><select id="adminEventVenue" required></select></label>
+          <label class="field">
+              <span>Venue</span>
+
+              <input type="text"
+                     id="adminEventVenue"
+                     list="adminVenueList"
+                     placeholder="Select or type venue"
+                     autocomplete="off" />
+
+              <datalist id="adminVenueList"></datalist>
+          </label>
           <label class="field"><span>Category</span><select id="adminEventCategory" required></select></label>
           <label class="field"><span>Ticket price (LKR)</span><input id="adminTicketPrice" type="number" min="0" step="0.01" required /></label>
           <label class="field"><span>Parking fee (LKR)</span><input id="adminParkingFee" type="number" min="0" step="0.01" required /></label>

@@ -3,6 +3,7 @@ const state = {
   user: JSON.parse(localStorage.getItem('parkora_user') || 'null'),
   events: [],
   categories: [],
+  venues: [],
   currentEvent: null,
   selectedSeats: new Set(),
   selectedParking: null,
@@ -394,18 +395,62 @@ async function searchCustomers() {
 }
 
 async function openEventForm() {
-  try {
-    const [venues, categories] = await Promise.all([api('/api/Venue'), api('/api/Categories')]);
-    $('#adminEventVenue').innerHTML = '<option value="">Select venue</option>' + venues.map(v=>`<option value="${v.venueId}">${escapeHtml(v.name)}</option>`).join('');
-    $('#adminEventCategory').innerHTML = '<option value="">Select category</option>' + categories.map(c=>`<option value="${c.categoryId}">${escapeHtml(c.name)}</option>`).join('');
-    openModal('eventFormModal');
-  } catch(e){ toast(e.message,'error','Could not prepare event form'); }
+    try {
+
+        const [venues, categories] = await Promise.all([
+            api('/api/Venue'),
+            api('/api/Categories')
+        ]);
+
+        state.venues = venues;
+
+        $('#adminVenueList').innerHTML =
+            venues.map(v =>
+                `<option value="${escapeHtml(v.name)}"></option>`
+            ).join('');
+
+        $('#adminEventVenue').value = '';
+
+        $('#adminEventCategory').innerHTML =
+            '<option value="">Select category</option>' +
+            categories.map(c =>
+                `<option value="${c.categoryId}">
+                    ${escapeHtml(c.name)}
+                </option>`
+            ).join('');
+
+        openModal('eventFormModal');
+
+    } catch (e) {
+
+        toast(
+            e.message,
+            'error',
+            'Could not prepare event form'
+        );
+    }
 }
 async function createAdminEvent(event) {
   event.preventDefault();
-  try {
+    try {
+        const venueName =
+            $('#adminEventVenue').value.trim();
+
+        const selectedVenue =
+            state.venues.find(v =>
+                v.name.toLowerCase() === venueName.toLowerCase()
+            );
+
+        if (!selectedVenue) {
+            toast(
+                'Please select a valid venue from the list.',
+                'error',
+                'Invalid venue'
+            );
+            return;
+        }
     await api('/api/Events', { method:'POST', body:JSON.stringify({
-      name:$('#adminEventName').value.trim(), venueId:Number($('#adminEventVenue').value), categoryId:Number($('#adminEventCategory').value), eventDate:$('#adminEventDate').value, eventTime:($('#adminEventTime').value.length===5 ? $('#adminEventTime').value+':00' : $('#adminEventTime').value), ticketPrice:Number($('#adminTicketPrice').value), parkingFee:Number($('#adminParkingFee').value), description:$('#adminEventDescription').value.trim()||null, seatRows:Number($('#adminSeatRows').value), seatsPerRow:Number($('#adminSeatsPerRow').value), parkingSlotCount:Number($('#adminParkingCount').value)
+        name: $('#adminEventName').value.trim(), venueId: selectedVenue.venueId, categoryId:Number($('#adminEventCategory').value), eventDate:$('#adminEventDate').value, eventTime:($('#adminEventTime').value.length===5 ? $('#adminEventTime').value+':00' : $('#adminEventTime').value), ticketPrice:Number($('#adminTicketPrice').value), parkingFee:Number($('#adminParkingFee').value), description:$('#adminEventDescription').value.trim()||null, seatRows:Number($('#adminSeatRows').value), seatsPerRow:Number($('#adminSeatsPerRow').value), parkingSlotCount:Number($('#adminParkingCount').value)
     })});
     closeModal('eventFormModal'); $('#eventCreateForm').reset(); toast('Event published successfully.'); loadAdmin(); loadEvents();
   } catch(e){ toast(e.message,'error','Event creation failed'); }
