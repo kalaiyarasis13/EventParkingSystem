@@ -95,7 +95,7 @@ public class BookingService : IBookingService
             }
 
             booking.TotalAmount = total;
-            ev.IsLocked = true; // seat map / pricing now frozen for this event
+           // ev.IsLocked = true; // seat map / pricing now frozen for this event
 
             // All repositories above share the same scoped DbContext, so this single call
             // persists the booking, its seats, and its parking reservation together.
@@ -154,11 +154,22 @@ public class BookingService : IBookingService
         using var transaction = await _bookingRepository.BeginTransactionAsync();
         try
         {
-            foreach (var bs in booking.BookingSeats)
+            foreach (var bs in booking.BookingSeats.ToList())
+            {
                 bs.Seat!.Status = SeatStatus.Available;
 
+                _bookingSeatRepository.Remove(bs);
+            }
+
             if (booking.ParkingReservation is not null)
-                booking.ParkingReservation.ParkingSlot!.Status = ParkingSlotStatus.Available;
+            {
+                booking.ParkingReservation.ParkingSlot!.Status =
+                    ParkingSlotStatus.Available;
+
+                _parkingReservationRepository.Remove(
+                    booking.ParkingReservation
+                );
+            }
 
             booking.Status = BookingStatus.Cancelled;
             booking.UpdatedAt = DateTime.UtcNow;

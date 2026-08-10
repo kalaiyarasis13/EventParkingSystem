@@ -72,7 +72,10 @@ public class FeedbackService : IFeedbackService
         await _feedbackRepository.AddAsync(feedback);
         await _feedbackRepository.SaveChangesAsync();
 
-        return MapToResponse(feedback);
+        var savedFeedback =
+            await _feedbackRepository.GetByIdAsync(feedback.FeedbackId);
+
+        return MapToResponse(savedFeedback!);
     }
 
     public async Task<FeedbackResponse> GetByIdAsync(int feedbackId)
@@ -138,14 +141,26 @@ public class FeedbackService : IFeedbackService
         await _feedbackRepository.SaveChangesAsync();
     }
 
+    public async Task<List<FeedbackResponse>> GetAllAsync()
+    {
+        var feedbacks = await _feedbackRepository.GetAllAsync();
+
+        return feedbacks
+            .Select(MapToResponse)
+            .ToList();
+    }
+
     private static FeedbackResponse MapToResponse(Feedback feedback)
     {
         return new FeedbackResponse(
             feedback.FeedbackId,
             feedback.BookingId,
             feedback.CustomerId,
+            feedback.Customer?.FullName ?? "Customer",
+            feedback.Booking?.Event?.Name ?? "Event",
             feedback.Rating,
             feedback.Comment,
-            feedback.CreatedAt);
+            feedback.CreatedAt
+        );
     }
 }

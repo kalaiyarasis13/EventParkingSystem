@@ -51,6 +51,14 @@ public class FeedbackController : ControllerBase
         return Ok(result);
     }
 
+    [HttpGet]
+    public async Task<ActionResult<List<FeedbackResponse>>> GetAll()
+    {
+        var result = await _feedbackService.GetAllAsync();
+
+        return Ok(result);
+    }
+
     [HttpPut("{feedbackId:int}")]
     public async Task<IActionResult> Update(
         int feedbackId,

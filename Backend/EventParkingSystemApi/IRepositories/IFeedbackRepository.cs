@@ -10,6 +10,8 @@ public interface IFeedbackRepository
 
     Task<List<Feedback>> GetByCustomerIdAsync(int customerId);
 
+    Task<List<Feedback>> GetAllAsync();
+
     Task AddAsync(Feedback feedback);
 
     void Update(Feedback feedback);

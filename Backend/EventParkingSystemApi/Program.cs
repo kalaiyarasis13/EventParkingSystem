@@ -15,7 +15,7 @@ namespace EventParkingSystemApi
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -154,6 +154,13 @@ namespace EventParkingSystemApi
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+                await AdminSeeder.SeedAdminAsync(dbContext);
+            }
 
             app.Run();
         }

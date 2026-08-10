@@ -42,7 +42,13 @@ async function api(path, options = {}) {
   let data = null;
   try { data = text ? JSON.parse(text) : null; } catch { data = text; }
   if (!response.ok) {
-    const message = data?.message || data?.title || (typeof data === 'string' ? data : `Request failed (${response.status})`);
+      const message =
+          data?.message ||
+          data?.Message ||
+          data?.title ||
+          (typeof data === 'string'
+              ? data
+              : `Request failed (${response.status})`);
     throw new Error(message);
   }
   return data;
@@ -93,13 +99,14 @@ function setAuthTab(tab) {
 }
 
 function showView(name) {
-  if (['bookings','notifications','profile'].includes(name) && !state.token) { openAuth('login'); return; }
+    if (['bookings', 'feedback', 'notifications', 'profile'].includes(name) && !state.token) { openAuth('login'); return; }
   if (name === 'admin' && state.user?.role !== 'Admin') { toast('Admin access is required.', 'error', 'Access denied'); return; }
   $$('.view').forEach(v => v.classList.remove('active-view'));
   $(`#view-${name}`)?.classList.add('active-view');
   $$('.nav-link').forEach(b => b.classList.toggle('active', b.dataset.view === name));
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  if (name === 'bookings') loadBookings();
+    if (name === 'bookings') loadBookings();
+    if (name === 'feedback') loadAllFeedback();
   if (name === 'notifications') loadNotifications();
   if (name === 'profile') loadProfile();
   if (name === 'admin') loadAdmin();
@@ -150,7 +157,17 @@ function renderEvents() {
         <div class="event-meta"><span>⌖ ${escapeHtml(event.venueName)}</span><span>◷ ${escapeHtml(String(event.eventTime).slice(0,5))}</span></div>
         <div class="event-footer">
           <div class="price-block"><small>Ticket from</small><strong>${formatMoney(event.ticketPrice)}</strong><span class="availability ${event.availableSeats === 0 ? 'locked':''}">${event.availableSeats} seats available</span></div>
-          <button class="btn ${event.isLocked || event.availableSeats === 0 ? 'btn-soft' : 'btn-primary'}" data-open-event="${event.eventId}" ${event.isLocked || event.availableSeats === 0 ? 'disabled' : ''}>${event.isLocked ? 'Locked' : event.availableSeats === 0 ? 'Sold out' : 'Book now'}</button>
+          <button
+    class="btn ${event.availableSeats === 0
+            ? 'btn-soft'
+            : 'btn-primary'}"
+    data-open-event="${event.eventId}"
+    ${event.availableSeats === 0 ? 'disabled' : ''}>
+    
+    ${event.availableSeats === 0
+            ? 'Sold out'
+            : 'Book now'}
+</button>
         </div>
       </div>
     </article>`;
@@ -171,7 +188,7 @@ async function openEvent(eventId) {
   openModal('eventModal');
   try {
     const [seats, parking] = await Promise.all([
-      api(`/api/Seat/event/${event.eventId}/available`),
+      api(`/api/Seat/event/${event.eventId}`),
       api(`/api/ParkingSlot/event/${event.eventId}/available`)
     ]);
     state.currentSeats = seats;
@@ -192,9 +209,33 @@ function renderBookingSelector() {
       <div>
         <section class="booking-section">
           <h3>Select seats</h3><p>Pick one or more available seats.</p>
-          <div class="booking-legend"><span><i class="legend-dot"></i>Available</span><span><i class="legend-dot selected"></i>Selected</span></div>
+         <div class="booking-legend">
+    <span><i class="legend-dot"></i>Available</span>
+    <span><i class="legend-dot selected"></i>Selected</span>
+    <span><i class="legend-dot booked"></i>Booked</span>
+</div>
           <div class="screen"></div>
-          <div class="seat-grid">${seats.length ? seats.map(s => `<button class="seat ${state.selectedSeats.has(s.seatId)?'selected':''}" data-seat-id="${s.seatId}" title="Row ${escapeHtml(s.seatRow)}, seat ${s.seatNumber}">${escapeHtml(s.seatRow)}${s.seatNumber}</button>`).join('') : '<div class="empty-state"><strong>No seats available</strong>This event may be sold out.</div>'}</div>
+          <div class="seat-grid">
+    ${seats.length ? seats.map(s => {
+        const isBooked = s.status === 'Booked';
+
+        return `
+            <button
+                class="seat
+                    ${state.selectedSeats.has(s.seatId) ? 'selected' : ''}
+                    ${isBooked ? 'booked' : ''}"
+                ${isBooked ? 'disabled' : `data-seat-id="${s.seatId}"`}
+                title="${isBooked
+                ? 'Already booked'
+                : `Row ${escapeHtml(s.seatRow)}, seat ${s.seatNumber}`}">
+
+                ${escapeHtml(s.seatRow)}${s.seatNumber}
+
+            </button>
+        `;
+    }).join('') :
+          '<div class="empty-state"><strong>No seats found</strong></div>'}
+</div>
         </section>
         <section class="booking-section" style="margin-top:28px">
           <h3>Reserve parking <span class="muted">(optional)</span></h3><p>Choose one parking slot for the same event.</p>
@@ -264,7 +305,16 @@ async function loadBookings() {
   const box = $('#bookingsList');
   box.innerHTML = '<div class="skeleton-card"></div>';
   try {
-    const bookings = await api(`/api/bookings/customer/${state.user.customerId}`);
+      const [bookings, feedbacks] = await Promise.all([
+          api(`/api/bookings/customer/${state.user.customerId}`),
+          api('/api/Feedback')
+      ]);
+
+      const feedbackBookingIds = new Set(
+          feedbacks
+              .filter(f => f.customerId === state.user.customerId)
+              .map(f => f.bookingId)
+      );
     if (!bookings.length) { box.innerHTML = '<div class="empty-state"><strong>No bookings yet</strong>Explore an event and reserve your first seat.</div>'; return; }
     box.innerHTML = bookings.map(b => `<article class="list-card">
       <div><div class="booking-title"><div class="booking-icon">${escapeHtml(b.eventName?.[0] || 'E')}</div><div class="booking-copy"><h3>${escapeHtml(b.eventName)}</h3><p>${escapeHtml(b.bookingNumber)} · ${formatDate(b.eventDate)} · ${escapeHtml(String(b.eventTime).slice(0,5))}</p></div><span class="status-pill ${b.isPaid ? 'success':'warn'}">${b.isPaid ? 'PAID' : 'PAYMENT DUE'}</span></div>
@@ -318,7 +368,12 @@ async function saveProfile(event) {
 
 async function loadAdmin() {
   try {
-    const [stats] = await Promise.all([api('/api/Dashboard/admin'), loadAdminEvents(), searchCustomers()]);
+      const [stats] = await Promise.all([
+          api('/api/Dashboard/admin'),
+          loadAdminEvents(),
+          searchCustomers(),
+          loadAdminFeedback()
+      ]);
     const cards = [
       ['Total events',stats.totalEvents],['Bookings',stats.totalBookings],['Available seats',stats.availableSeatsSystemWide],['Parking occupied',stats.occupiedParkingSlots],['Revenue',formatMoney(stats.totalRevenue)],['Customers',stats.totalCustomers]
     ];
@@ -394,6 +449,8 @@ function bindEvents() {
     if (e.target.closest('#confirmBookingBtn')) createBooking();
   });
 
+    $('#refreshAdminFeedbackBtn')
+        .addEventListener('click', loadAdminFeedback);
   $('#loginBtn').addEventListener('click',()=>openAuth('login'));
   $('#registerBtn').addEventListener('click',()=>openAuth('register'));
   $('#logoutBtn').addEventListener('click',()=>{clearSession();showView('home');toast('You have been signed out.');});
@@ -437,3 +494,165 @@ async function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+async function loadAllFeedback() {
+
+    const box = $('#allFeedbackList');
+
+    box.innerHTML = '<div class="skeleton-card"></div>';
+
+    try {
+
+        const feedbacks = await api('/api/Feedback');
+
+        if (!feedbacks.length) {
+
+            box.innerHTML = `
+                <div class="empty-state">
+                    <strong>No feedback yet</strong>
+                    Customer reviews will appear here.
+                </div>
+            `;
+
+            return;
+        }
+
+        box.innerHTML = feedbacks.map(f => `
+            <article class="list-card">
+
+                <div>
+
+                    <div class="booking-title">
+
+                        <div class="booking-icon">
+                            ${escapeHtml(f.customerName?.[0] || 'C')}
+                        </div>
+
+                        <div class="booking-copy">
+
+                            <h3>${escapeHtml(f.eventName)}</h3>
+
+                            <p>
+                                ${escapeHtml(f.customerName)}
+                                · ${formatDateTime(f.createdAt)}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="booking-detail-row">
+
+                        <span>
+                            Rating:
+                            ${'★'.repeat(f.rating)}
+                            ${'☆'.repeat(5 - f.rating)}
+                        </span>
+
+                        <span>
+                            ${escapeHtml(f.comment || 'No comment')}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <span class="status-pill success">
+                    ${f.rating}/5
+                </span>
+
+            </article>
+        `).join('');
+
+    }
+    catch (e) {
+
+        box.innerHTML = `
+            <div class="empty-state">
+                <strong>Could not load feedback</strong>
+                ${escapeHtml(e.message)}
+            </div>
+        `;
+    }
+}
+
+async function loadAdminFeedback() {
+
+    const box = $('#adminFeedbackList');
+
+    box.innerHTML = '<div class="skeleton-card"></div>';
+
+    try {
+
+        const feedbacks = await api('/api/Feedback');
+
+        if (!feedbacks.length) {
+
+            box.innerHTML = `
+                <div class="empty-state">
+                    <strong>No feedback yet</strong>
+                    Customer feedback will appear here.
+                </div>
+            `;
+
+            return;
+        }
+
+        box.innerHTML = feedbacks.map(f => `
+            <article class="list-card">
+
+                <div>
+
+                    <div class="booking-title">
+
+                        <div class="booking-icon">
+                            ${escapeHtml(f.customerName?.[0] || 'C')}
+                        </div>
+
+                        <div class="booking-copy">
+
+                            <h3>${escapeHtml(f.eventName)}</h3>
+
+                            <p>
+                                ${escapeHtml(f.customerName)}
+                                · ${formatDateTime(f.createdAt)}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="booking-detail-row">
+
+                        <span>
+                            Rating:
+                            ${'★'.repeat(f.rating)}
+                            ${'☆'.repeat(5 - f.rating)}
+                        </span>
+
+                        <span>
+                            ${escapeHtml(f.comment || 'No comment')}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <span class="status-pill success">
+                    ${f.rating}/5
+                </span>
+
+            </article>
+        `).join('');
+
+    }
+    catch (e) {
+
+        box.innerHTML = `
+            <div class="empty-state">
+                <strong>Could not load feedback</strong>
+                ${escapeHtml(e.message)}
+            </div>
+        `;
+    }
+}

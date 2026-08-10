@@ -10,6 +10,8 @@ public interface IFeedbackService
 
     Task<FeedbackResponse> GetByIdAsync(int feedbackId);
 
+    Task<List<FeedbackResponse>> GetAllAsync();
+
     Task<List<FeedbackResponse>> GetByCustomerIdAsync(int customerId);
 
     Task UpdateAsync(

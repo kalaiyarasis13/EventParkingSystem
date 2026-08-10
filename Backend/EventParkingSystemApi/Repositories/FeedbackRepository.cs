@@ -16,25 +16,38 @@ public class FeedbackRepository : IFeedbackRepository
     public async Task<Feedback?> GetByIdAsync(int feedbackId)
     {
         return await _db.Feedbacks
-            .Include(f => f.Booking)
             .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
             .FirstOrDefaultAsync(f => f.FeedbackId == feedbackId);
     }
 
     public async Task<Feedback?> GetByBookingIdAsync(int bookingId)
     {
         return await _db.Feedbacks
-            .Include(f => f.Booking)
             .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
             .FirstOrDefaultAsync(f => f.BookingId == bookingId);
     }
 
     public async Task<List<Feedback>> GetByCustomerIdAsync(int customerId)
     {
         return await _db.Feedbacks
-            .Include(f => f.Booking)
             .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
             .Where(f => f.CustomerId == customerId)
+            .OrderByDescending(f => f.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<List<Feedback>> GetAllAsync()
+    {
+        return await _db.Feedbacks
+            .Include(f => f.Customer)
+            .Include(f => f.Booking)
+                .ThenInclude(b => b.Event)
             .OrderByDescending(f => f.CreatedAt)
             .ToListAsync();
     }
